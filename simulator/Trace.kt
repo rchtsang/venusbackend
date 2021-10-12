@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
  * Created by Thaumic on 7/14/2018.
  */
 
-class Trace(branched: Boolean, jumped: Boolean, ecallMsg: String, regs: Array<Number>, inst: MachineCode, line: Int, pc: Number, error: SimulatorError? = null) {
+class Trace(branched: Boolean, jumped: Boolean, ecallMsg: String, regs: Array<Number>, inst: MachineCode, line: Int, pc: Number, mem: Memory, error: SimulatorError? = null) {
     var branched = false
     var jumped = false
     var ecallMsg = ""
@@ -32,6 +32,7 @@ class Trace(branched: Boolean, jumped: Boolean, ecallMsg: String, regs: Array<Nu
         this.inst = inst
         this.line = line
         this.pc = pc
+        this.mem = mem
         this.error = error
     }
 
@@ -55,6 +56,12 @@ class Trace(branched: Boolean, jumped: Boolean, ecallMsg: String, regs: Array<Nu
         for (i in 0..(regs.size - 1)) {
             f = f.replace("%" + i.toString() + "%", numToBase(base, this.regs[i].toInt(), 32, true))
             f = f.replace("%x" + i.toString() + "%", numToBase(base, this.regs[i].toInt(), 32, true))
+        }
+        val memregex = Regex("%mem:[a-f0-9A-F]+%")
+        val matches = memregex.findAll(format)
+        for (match in matches) {
+        	val addr = (match.value.substring(5, match.value.length -1)).toLong(radix=16)
+        	f.replace(match, numToBase(base, this.mem.loadWord(addr)), 32, false)
         }
         return f
     }

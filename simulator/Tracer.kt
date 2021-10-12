@@ -44,7 +44,7 @@ class Tracer(var sim: Simulator) {
     }
 
     fun traceAddError(err: SimulatorError) {
-        this.tr.trace.add(Trace(false, false, "", Array(0) { 0 }, MachineCode(0), 0, 0, error = err))
+        this.tr.trace.add(Trace(false, false, "", Array(0) { 0 }, MachineCode(0), 0, 0, sim.state.mem, error = err))
     }
 
     fun traceFullReset() {
@@ -62,7 +62,7 @@ class Tracer(var sim: Simulator) {
         sim.reset(keep_args = true)
         this.startPC = sim.getPC().toInt()
         if (this.twoStage) {
-            this.tr.trace.add(Trace(didBrach(), didJump(), getecallMsg(), getRegs(), if (!sim.isDone()) sim.getNextInstruction() else MachineCode(0), this.tr.traceLine, sim.getPC()))
+            this.tr.trace.add(Trace(didBrach(), didJump(), getecallMsg(), getRegs(), if (!sim.isDone()) sim.getNextInstruction() else MachineCode(0), this.tr.traceLine, sim.getPC(), sim.state.mem))
             this.tr.traceLine++
         }
         if (!this.instFirst && !sim.isDone()) {
@@ -126,7 +126,7 @@ class Tracer(var sim: Simulator) {
             mc = prevInst
             prevInst = t
         }
-        return Trace(didBrach(), didJump(), getecallMsg(), getRegs(), mc, line, sim.getPC())
+        return Trace(didBrach(), didJump(), getecallMsg(), getRegs(), mc, line, sim.getPC(), sim.state.mem)
     }
 
     fun getRegs(): Array<Number> {
