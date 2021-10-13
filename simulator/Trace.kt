@@ -62,7 +62,8 @@ class Trace(branched: Boolean, jumped: Boolean, ecallMsg: String, regs: Array<Nu
         val matches = memregex.findAll(format)
         for (match in matches) {
             val addr = (match.value.substring(5, match.value.length - 1)).toLong(radix = 16)
-            f = f.replace(match.value, numToBase(base, this.mem.loadWord(addr), 32, false))
+            val hexval = this.mem.loadWord(addr).toUInt().toLong().toString(radix = 16)
+            f = f.replace(match.value, hexval)
         }
         return f
     }

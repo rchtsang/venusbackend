@@ -18,6 +18,15 @@ class Memory {
     // TODO Change this from long :(
     private val memory = HashMap<Long, Byte>()
 
+    // clone function for deepcopy
+    fun clone(): Memory {
+        val mem = Memory()
+        for ((addr, byte) in memory) {
+            mem.storeByte(addr, byte)
+        }
+        return mem
+    }
+
     fun removeByte(addr: Number) {
         memory.remove(addr)
     }
