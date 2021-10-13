@@ -21,6 +21,7 @@ class Trace(branched: Boolean, jumped: Boolean, ecallMsg: String, regs: Array<Nu
     var inst = MachineCode(0)
     var line = 0
     var pc: Number = 0
+    var mem = Memory()
     var prevTrace: Trace? = null
     var error: SimulatorError? = null
 
@@ -60,8 +61,8 @@ class Trace(branched: Boolean, jumped: Boolean, ecallMsg: String, regs: Array<Nu
         val memregex = Regex("%mem:[a-f0-9A-F]+%")
         val matches = memregex.findAll(format)
         for (match in matches) {
-        	val addr = (match.value.substring(5, match.value.length -1)).toLong(radix=16)
-        	f.replace(match, numToBase(base, this.mem.loadWord(addr)), 32, false)
+            val addr = (match.value.substring(5, match.value.length - 1)).toLong(radix = 16)
+            f = f.replace(match.value, numToBase(base, this.mem.loadWord(addr), 32, false))
         }
         return f
     }
@@ -75,7 +76,7 @@ class Trace(branched: Boolean, jumped: Boolean, ecallMsg: String, regs: Array<Nu
 
     fun copy(): Trace {
         /*@fixme This is not a pure copy since modifing internal things in the copy still can affect the main.*/
-        return Trace(branched, jumped, ecallMsg, regs.copyOf(), inst, line, pc)
+        return Trace(branched, jumped, ecallMsg, regs.copyOf(), inst, line, pc, mem)
     }
 }
 /*
